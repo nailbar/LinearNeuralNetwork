@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
+<title>Linear Neural Network test page</title>
+<script type='text/javascript' src='LinearNeuralNetwork.class.js'></script>
+<script type='text/javascript'>
+var n = new LinearNeuralNetwork(15, 6, 1, 1, 40, 40);
+function loop() {
+    var d = "";
+    var x = 0;
+    for(var i = -20; i < 20; i++) {
+        x = n.think([i])[0];
+        d += i + " -> ";
+        for(var u = -40; u < x; u++) d += '#';
+        d += n.think([i])[0] + "\n";
+    }
+    document.getElementById('output').innerHTML = d;
+    n.mutate(1); // Mutate one neuron
+    setTimeout(loop, 100);
+}
+</script>
+</head>
+<body onload='loop()'>
+<pre id='output'></pre>
+</body>
+</html>
