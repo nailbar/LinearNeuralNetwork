@@ -5,7 +5,7 @@
 <title>Linear Neural Network test page</title>
 <script type='text/javascript' src='LinearNeuralNetwork.class.js'></script>
 <script type='text/javascript'>
-var n = new LinearNeuralNetwork(60, 8, 2, 3, 1, 1);
+var n = new LinearNeuralNetwork(30, 15, 2, 3, 1, 1);
 var c = false;
 var y = 0;
 function loop() {
@@ -16,11 +16,7 @@ function loop() {
         c.fillStyle = "rgb(" + Math.floor(tmp[0] * 127 + 127) + "," + Math.floor(tmp[1] * 127 + 127) + "," + Math.floor(tmp[2] * 127 + 127) + ")";
         c.fillRect(x, y, 1, 1);
     }
-    y++;
-    if(y > 399) {
-        n.mutate(1); // Mutate one neuron
-        y -= 400;
-    }
+    y = (y + 1) % 400;
     setTimeout(loop, 10);
 }
 function reset_nn() {
@@ -33,22 +29,28 @@ function reset_nn() {
     if(complexity < 1) complexity = 1;
     if(complexity > size) complexity = size;
     n = new LinearNeuralNetwork(size, complexity, 2, 3, 1, 1);
+    y = 0;
 }
 </script>
 </head>
 <body onload='loop()'>
 <canvas width='500' height='400' id='canvas'></canvas>
 <table><tr>
-    <td colspan='2'>Neural network settings (High numbers may lock your browser for some time)</td>
+    <td colspan='2'>Neural network settings (Higher numbers means more detail but may lock your browser for some time)</td>
 </tr><tr>
-    <td>Size (min 5, default 60):</td>
-    <td><input type='text' value='60' id='size'></td>
+    <td>Size (min 5, default 30):</td>
+    <td><input type='text' value='30' id='size'> Number of neurons (including 2 for input; x, y and 3 for outpug; r, g, b)</td>
 </tr><tr>
-    <td>Complexity (min 1, default 8):</td>
-    <td><input type='text' value='8' id='complexity'></td>
+    <td>Complexity (min 1, default 15):</td>
+    <td><input type='text' value='15' id='complexity'> Number of connections per neuron</td>
 </tr><tr>
     <td></td>
-    <td><input type='button' value='Update' onclick='reset_nn()'></td>
+    <td><input type='button' value='Update' onclick='reset_nn()'> Creates a new neural network from scratch using the above values</td>
+</tr><tr>
+    <td></td>
+    <td><input type='button' value='Mutate' onclick='n.mutate(1);y=0'> Mutates a single neuron in the current neural network</td>
+</tr><tr>
+    <td colspan='2'>By Martin 'Nailbar' Wikström (<a href='https://github.com/nailbar'>github.com/nailbar</a></td>
 </tr></table>
 </body>
 </html>
