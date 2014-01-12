@@ -91,3 +91,26 @@ LinearNeuralNetwork.prototype.mutate = function(amount) {
         }
     }
 }
+
+// Export neural network as string
+LinearNeuralNetwork.prototype.export = function() {
+    var data = [
+        "LNN",
+        this.max_in,
+        this.max_out,
+        this.inputs,
+        this.outputs,
+        this.connections
+    ];
+    for(var i = 0; i < this.n.length; i++) {
+        data.push("N");
+        for(var u = 0; u < this.n[i].inputs.length; u++) {
+            data.push("I");
+            data.push(this.n[i].inputs[u].ref);
+            data.push(this.n[i].inputs[u].weight);
+            data.push(this.n[i].inputs[u].offset);
+            data.push(this.n[i].inputs[u].method);
+        }
+    }
+    return data.join(":");
+}
