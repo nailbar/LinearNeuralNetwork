@@ -114,3 +114,54 @@ LinearNeuralNetwork.prototype.export = function() {
     }
     return data.join(":");
 }
+
+// Import neural network from string
+LinearNeuralNetwork.prototype.import = function(str) {
+    var data = str.split(':');
+    if(data[0] != "LNN") return false;
+    this.max_in = parseFloat(data[1]);
+    this.max_out = parseFloat(data[2]);
+    this.inputs = parseInt(data[3], 10);
+    this.outputs = parseInt(data[4], 10);
+    this.connections = parseInt(data[5], 10);
+    this.n = [];
+    var cur_n = -1;
+    var cur_i = -1;
+    var cur_p = -1;
+    for(var i = 6; i < data.length; i++) {
+        if(data[i] == "N") {
+            cur_n++;
+            this.n[cur_n] = {
+                'output': 0,
+                'inputs': []
+            };
+            cur_i = -1;
+            continue;
+        } else if(data[i] == "I") {
+            cur_i++;
+            cur_p = "ref";
+            this.n[cur_n].inputs[cur_i] = {
+                'ref': 0,
+                'weight': 0,
+                'offset': 0,
+                'method': 0
+            };
+            continue;
+        } else if(cur_p == 'ref') {
+            this.n[cur_n].inputs[cur_i][cur_p] = parseInt(data[i], 10);
+            cur_p = 'weight';
+        } else if(cur_p == 'weight') {
+            this.n[cur_n].inputs[cur_i][cur_p] = parseFloat(data[i]);
+            cur_p = 'offset';
+        } else if(cur_p == 'offset') {
+            this.n[cur_n].inputs[cur_i][cur_p] = parseFloat(data[i]);
+            cur_p = 'method';
+        } else if(cur_p == 'method') {
+            this.n[cur_n].inputs[cur_i][cur_p] = parseFloat(data[i]);
+            cur_p = 'done';
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
