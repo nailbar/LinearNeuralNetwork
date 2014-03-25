@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
+<title>Linear Neural Network test page</title>
+<script type='text/javascript' src='LinearNeuralNetwork.class.js'></script>
+<script type='text/javascript'>
+var n = new LinearNeuralNetwork(30, 15, 3, 5, 1, 1);
+var c = false;
+var cnv = false;
+var maxleft = 20;
+var startx = 350;
+var treetimeout = 300;
+function init() {
+    cnv = document.getElementById('canvas');
+    c = cnv.getContext('2d');
+    cnv.width  = window.innerWidth;
+    cnv.height = window.innerHeight;
+    c.globalAlpha = 0.2;
+    loop();
+}
+function loop() {
+    treetimeout--;
+    if(treetimeout < 0) {
+        treetimeout = 300;
+        startx = Math.random() * (Math.random() * 2.0 - 1.0) * cnv.width * 0.45 + cnv.width * 0.5;
+        n.mutate(2);
+        c.fillRect(0, 0, cnv.width, cnv.height);
+    }
+    var nout = n.think([1, 0, 1]);
+    drawBranch(startx, cnv.height * 0.75, 50, 50, Math.PI * -0.5, maxleft, "rgb(" + Math.floor(nout[2] * 127 + 127) + "," + Math.floor(nout[3] * 127 + 127) + "," + Math.floor(nout[4] * 127 + 127) + ")");
+    setTimeout(loop, 10);
+}
+function drawBranch(x, y, oldsize, size, dir, left, color) {
+    
+    // If tree gets out of line create a completely random one in its place
+    if(y > cnv.height * 0.75 + 20 || y < 0) {
+        n.mutate(1);
+        treetimeout--;
+        return;
+//         treetimeout = 0;
+//         n = new LinearNeuralNetwork(30, 15, 3, 5, 1, 1);
+    }
+    var x2 = x + Math.cos(dir) * size;
+    var y2 = y + Math.sin(dir) * size;
+    c.strokeStyle = color;
+    c.beginPath();
+    c.moveTo(x + Math.random() * oldsize * 0.1, y + Math.random() * oldsize * 0.1);
+    c.lineTo(x2 + Math.random() * size * 0.1, y2 + Math.random() * size * 0.1);
+    c.stroke();
+    left--;
+    if(left > 0) {
+        var i = Math.floor(Math.random() * 3.0) / 3.0;
+        var nout = n.think([size / 50, i, left / maxleft]);
+        drawBranch(x2, y2, size, size * Math.abs(nout[0]), dir + nout[1] * 0.5, left, "rgb(" + Math.floor(nout[2] * 127 + 127) + "," + Math.floor(nout[3] * 127 + 127) + "," + Math.floor(nout[4] * 127 + 127) + ")");
+    }
+}
+</script>
+</head>
+<body onload='init()' style='background-color: #f00; margin: 0px; padding: 0px;'>
+<canvas width='700' height='500' id='canvas' style='background-color: #000; position: absolute;'></canvas>
+</body>
+</html>
