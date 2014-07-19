@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
+<title>Linear Neural Network test page</title>
+<script type='text/javascript' src='LinearNeuralNetwork.class.js'></script>
+<script type='text/javascript'>
+var n = new LinearNeuralNetwork(20, 10, 3);
+var canvas = false;
+var c = false;
+var y = 1;
+var img_width = 1350;
+var img_height = 630;
+
+// Init
+function init() {
+    canvas = document.getElementById('canvas');
+    c = canvas.getContext('2d');
+    c.fillStyle = "rgb(1,2,3)";
+    c.fillRect(canvas.width / 2, 0, 1, 1);
+    loop();
+}
+function loop() {
+    var tmp, tmp_vals;
+    for(var x = 0; x < img_width; x++) {
+        tmp_vals = [];
+        for(var x2 = x - 2; x2 <= x + 2; x2++) {
+            tmp = getValue(x2, y - 1);
+            tmp_vals.push(tmp[0] / 256.0);
+            tmp_vals.push(tmp[1] / 256.0);
+            tmp_vals.push(tmp[2] / 256.0);
+        }
+        tmp = n.think(tmp_vals);
+        c.fillStyle = "rgb(" + Math.floor(tmp[0] * 256) + "," + Math.floor(tmp[1] * 256) + "," + Math.floor(tmp[2] * 256) + ")";
+        c.fillRect(x, y, 1, 1);
+    }
+    if(getValueStop) {
+        y = 0;
+        getValueY = 10000;
+        getValueStop = false;
+        n = new LinearNeuralNetwork(20, 10, 3);
+        c.fillStyle = "rgb(1,2,3)";
+        c.fillRect(canvas.width / 2, 0, 1, 1);
+    }
+    y++;
+    if(y < img_height) setTimeout(loop, 10);
+    else {
+        y = 0;
+        n.mutate(Math.floor(Math.random() * 100.0 + 2.0));
+        setTimeout(loop, 10);
+    }
+}
+
+var getValueY = 10000;
+var getValueLine = false;
+var getValueStop = false;
+function getValue(x, y) {
+    while(y < 0) y += canvas.height;
+    while(y >= canvas.height) y -= canvas.height;
+    if(getValueY != y) {
+        getValueLine = c.getImageData(0, y, canvas.width, 1).data;
+        getValueY = y;
+        var test = getValueLine[0] * 256 * 256 + getValueLine[1] * 256 + getValueLine[2];
+        var test_failed = true;
+        for(var i = 1; i < canvas.width; i++) if(getValueLine[i * 4] * 256 * 256 + getValueLine[i * 4 + 1] * 256 + getValueLine[i * 4 + 2] != test) {
+            test_failed = false;
+            break;
+        }
+        if(test_failed) getValueStop = true;
+    }
+    while(x < 0) x += canvas.width;
+    while(x >= canvas.width) x -= canvas.width;
+    return [
+        getValueLine[x * 4],
+        getValueLine[x * 4 + 1],
+        getValueLine[x * 4 + 2]
+    ];
+}
+</script>
+</head>
+<body onload='init()'>
+<canvas width='1350' height='630' id='canvas'></canvas>
+</body>
+</html>
