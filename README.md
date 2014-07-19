@@ -8,3 +8,5 @@ Examples:
      * Draws random pictures from which you can pick your favorite upon which the next set of pictures are based.
   * forest.html
      * Draws a forest with ever evolving trees.
+  * test.html
+     * Just paints a random picture for testing purposes.

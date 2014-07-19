@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
+<title>Linear Neural Network test page</title>
+<script type='text/javascript' src='LinearNeuralNetwork.class.js'></script>
+<script type='text/javascript'>
+var n = new LinearNeuralNetwork(50, 20, 3);
+var c = false;
+var y = 0;
+var img_width = 1350;
+var img_height = 630;
+
+// Init
+function init() {
+    c = document.getElementById('canvas').getContext('2d');
+    loop();
+}
+function loop() {
+    var tmp;
+    for(var x = 0; x < img_width; x++) {
+        tmp = n.think([n.normalize(x - (img_width * 0.5), (img_width * 0.5), (img_width * 0.5)), n.normalize(y - (img_height * 0.5), (img_height * 0.5), (img_height * 0.5))]);
+        c.fillStyle = "rgb(" + Math.floor(tmp[0] * 256) + "," + Math.floor(tmp[1] * 256) + "," + Math.floor(tmp[2] * 256) + ")";
+        c.fillRect(x, y, 1, 1);
+    }
+    y++;
+    if(y < img_height) setTimeout(loop, 10);
+    else {
+        y = 0;
+        //n.mutate(10);
+        //setTimeout(loop, 10);
+    }
+}
+</script>
+</head>
+<body onload='init()'>
+<canvas width='1350' height='630' id='canvas'></canvas>
+</body>
+</html>

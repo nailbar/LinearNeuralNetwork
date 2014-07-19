@@ -5,7 +5,7 @@
 <title>Linear Neural Network test page</title>
 <script type='text/javascript' src='LinearNeuralNetwork.class.js'></script>
 <script type='text/javascript'>
-var n = new LinearNeuralNetwork(30, 15, 3, 5, 1, 1);
+var n = new LinearNeuralNetwork(30, 15, 5);
 var c = false;
 var cnv = false;
 var maxleft = 20;
@@ -28,7 +28,7 @@ function loop() {
         c.fillRect(0, 0, cnv.width, cnv.height);
     }
     var nout = n.think([1, 0, 1]);
-    drawBranch(startx, cnv.height * 0.75, 50, 50, Math.PI * -0.5, maxleft, "rgb(" + Math.floor(nout[2] * 127 + 127) + "," + Math.floor(nout[3] * 127 + 127) + "," + Math.floor(nout[4] * 127 + 127) + ")");
+    drawBranch(startx, cnv.height * 0.75, 50, 50, Math.PI * -0.5, maxleft, "rgb(" + Math.floor(nout[2] * 256) + "," + Math.floor(nout[3] * 256) + "," + Math.floor(nout[4] * 256) + ")");
     setTimeout(loop, 10);
 }
 function drawBranch(x, y, oldsize, size, dir, left, color) {
@@ -52,7 +52,7 @@ function drawBranch(x, y, oldsize, size, dir, left, color) {
     if(left > 0) {
         var i = Math.floor(Math.random() * 3.0) / 3.0;
         var nout = n.think([size / 50, i, left / maxleft]);
-        drawBranch(x2, y2, size, size * Math.abs(nout[0]), dir + nout[1] * 0.5, left, "rgb(" + Math.floor(nout[2] * 127 + 127) + "," + Math.floor(nout[3] * 127 + 127) + "," + Math.floor(nout[4] * 127 + 127) + ")");
+        drawBranch(x2, y2, size, size * Math.abs(nout[0]), dir + nout[1] - 0.5, left, "rgb(" + Math.floor(nout[2] * 256) + "," + Math.floor(nout[3] * 256) + "," + Math.floor(nout[4] * 256) + ")");
     }
 }
 </script>

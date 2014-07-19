@@ -5,7 +5,7 @@
 <title>Linear Neural Network test page</title>
 <script type='text/javascript' src='LinearNeuralNetwork.class.js'></script>
 <script type='text/javascript'>
-var n = new LinearNeuralNetwork(0, 0, 0, 0, 0, 0);
+var n = new LinearNeuralNetwork(0, 0, 0);
 var c = false;
 // var y = 0;
 function validate_nn() {
@@ -34,7 +34,7 @@ function init() {
     var size = parseInt(document.getElementById('size').value);
     var complexity = parseInt(document.getElementById('complexity').value);
     for(var i = 0; i < 9; i++) {
-        nna[i] = new LinearNeuralNetwork(size, complexity, 2, 3, 1, 1);
+        nna[i] = new LinearNeuralNetwork(size, complexity, 3);
         nnc[i] = document.getElementById('canvas' + i).getContext('2d');
     }
     mutate = 1;
@@ -114,6 +114,6 @@ function presets(wat) {
 </tr><tr>
     <td colspan='2'>By Martin 'Nailbar' Wikström (<a href='https://github.com/nailbar'>github.com/nailbar</a>)</td>
 </tr></table>
-<p>Preset: <input type='button' value='Man' onclick='presets("man")'></p>
+<!--<p>Preset: <input type='button' value='Man' onclick='presets("man")'></p>-->
 </body>
 </html>
