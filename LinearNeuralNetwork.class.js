@@ -29,12 +29,17 @@ LinearNeuralNetworkNeuron.prototype.crop = function(value) {
 }
 
 // Generate output from input for one neuron
+var dev = false;
 LinearNeuralNetworkNeuron.prototype.think = function(neurons) {
     this.output = this.value;
     var inputvalue = 0;
     for(var i = 0; i < this.inputs.length; i++) {
         inputvalue = neurons[this.inputs[i].source].output;
         if(inputvalue >= this.inputs[i].minimum && inputvalue <= this.inputs[i].maximum) {
+            if(dev) {
+                inputvalue -= this.inputs[i].minimum;
+                inputvalue *= 1 / (this.inputs[i].maximum - this.inputs[i].minimum);
+            }
             this.output += this.inputs[i].offset + inputvalue * this.inputs[i].weight;
         }
     }
