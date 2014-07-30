@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
 <title>Linear Neural Network test page</title>
-<script type='text/javascript' src='LinearNeuralNetwork.class.js'></script>
+<script type='text/javascript' src='../LinearNeuralNetwork.class.js'></script>
 <script type='text/javascript'>
 var n = new LinearNeuralNetwork(10, 4, 3);
 var c = false;
@@ -19,7 +19,10 @@ function init() {
 function loop() {
     var tmp;
     for(var x = 0; x < img_width; x++) {
-        tmp = n.think([n.normalize(x - (img_width * 0.5), (img_width * 0.5), (img_width * 0.5)), n.normalize(y - (img_height * 0.5), (img_height * 0.5), (img_height * 0.5))]);
+        tmp = n.think([
+            n.normalize(x - (img_width * 0.5), (img_width * 0.5), (img_width * 0.5)),
+            n.normalize(y - (img_height * 0.5), (img_height * 0.5), (img_height * 0.5))
+        ]);
         c.fillStyle = "rgb(" + Math.floor(tmp[0] * 256) + "," + Math.floor(tmp[1] * 256) + "," + Math.floor(tmp[2] * 256) + ")";
         c.fillRect(x, y, 1, 1);
     }
