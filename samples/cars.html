@@ -5,7 +5,6 @@
 <title>Linear Neural Network test page</title>
 <script type='text/javascript' src='../LinearNeuralNetwork.class.js'></script>
 <script type='text/javascript'>
-var n = new LinearNeuralNetwork(9, 3, 3);
 var c = false;
 var img_width = 1350;
 var img_height = 630;
@@ -13,10 +12,10 @@ var cars = [];
 
 // A car
 function car() {
-    this.position = { 'x': Math.random() * img_width, 'y': Math.random() * img_height };
-    this.normal = { 'x': Math.cos(this.position.x), 'y': Math.sin(this.position.x) };
+    this.position = { 'x': img_width * 0.5, 'y': img_height * 0.5 };
+    this.normal = { 'x': 1.0, 'y': 0.0 };
     this.right = { 'x': this.normal.y, 'y': -this.normal.x };
-    this.wheels = Math.random() * 2.0 - 1.0;
+    this.wheels = 0.0;
     this.wheelnormal = {
         'x': this.normal.x * Math.cos(this.wheels * 0.8) - this.normal.y * Math.sin(this.wheels * 0.8),
         'y': this.normal.x * Math.sin(this.wheels * 0.8) + this.normal.y * Math.cos(this.wheels * 0.8)
@@ -29,8 +28,8 @@ car.prototype.think = function() {
     this.mind.mutate(1, 0.1);
     var input = [ this.position.x / img_width, this.position.y / img_height ];
     var output = this.mind.think(input);
-    this.wheels = output[0] - output[1];
-    this.speed = output[2] * 2.0;
+    this.wheels = this.wheels + ((output[0] - output[1]) - this.wheels) * 0.03;
+    this.speed = this.speed + (output[2] * 2.0 - this.speed) * 0.01;
 }
 car.prototype.move = function() {
     var tmp = {};
@@ -52,22 +51,22 @@ car.prototype.draw = function() {
     c.strokeStyle = "rgb(0,0,0)";
     c.lineWidth = 2;
     c.beginPath();
-    c.moveTo(this.position.x + this.right.x * 4.0 + this.normal.x * 6.0 + this.wheelnormal.x * 3.0, this.position.y + this.right.y * 4.0 + this.normal.y * 6.0 + this.wheelnormal.y * 3.0);
-    c.lineTo(this.position.x + this.right.x * 4.0 + this.normal.x * 6.0 - this.wheelnormal.x * 3.0, this.position.y + this.right.y * 4.0 + this.normal.y * 6.0 - this.wheelnormal.y * 3.0);
+    c.moveTo(this.position.x + this.right.x * 3.5 + this.normal.x * 6.0 + this.wheelnormal.x * 3.0, this.position.y + this.right.y * 3.5 + this.normal.y * 6.0 + this.wheelnormal.y * 3.0);
+    c.lineTo(this.position.x + this.right.x * 3.5 + this.normal.x * 6.0 - this.wheelnormal.x * 3.0, this.position.y + this.right.y * 3.5 + this.normal.y * 6.0 - this.wheelnormal.y * 3.0);
     c.stroke();
     c.beginPath();
-    c.moveTo(this.position.x - this.right.x * 4.0 + this.normal.x * 6.0 + this.wheelnormal.x * 3.0, this.position.y - this.right.y * 4.0 + this.normal.y * 6.0 + this.wheelnormal.y * 3.0);
-    c.lineTo(this.position.x - this.right.x * 4.0 + this.normal.x * 6.0 - this.wheelnormal.x * 3.0, this.position.y - this.right.y * 4.0 + this.normal.y * 6.0 - this.wheelnormal.y * 3.0);
+    c.moveTo(this.position.x - this.right.x * 3.5 + this.normal.x * 6.0 + this.wheelnormal.x * 3.0, this.position.y - this.right.y * 3.5 + this.normal.y * 6.0 + this.wheelnormal.y * 3.0);
+    c.lineTo(this.position.x - this.right.x * 3.5 + this.normal.x * 6.0 - this.wheelnormal.x * 3.0, this.position.y - this.right.y * 3.5 + this.normal.y * 6.0 - this.wheelnormal.y * 3.0);
     c.stroke();
     
     // Rear wheels
     c.beginPath();
-    c.moveTo(this.position.x + this.right.x * 4.0 - this.normal.x * 3.0, this.position.y + this.right.y * 4.0 - this.normal.y * 3.0);
-    c.lineTo(this.position.x + this.right.x * 4.0 - this.normal.x * 9.0, this.position.y + this.right.y * 4.0 - this.normal.y * 9.0);
+    c.moveTo(this.position.x + this.right.x * 3.5 - this.normal.x * 3.0, this.position.y + this.right.y * 3.5 - this.normal.y * 3.0);
+    c.lineTo(this.position.x + this.right.x * 3.5 - this.normal.x * 9.0, this.position.y + this.right.y * 3.5 - this.normal.y * 9.0);
     c.stroke();
     c.beginPath();
-    c.moveTo(this.position.x - this.right.x * 4.0 - this.normal.x * 3.0, this.position.y - this.right.y * 4.0 - this.normal.y * 3.0);
-    c.lineTo(this.position.x - this.right.x * 4.0 - this.normal.x * 9.0, this.position.y - this.right.y * 4.0 - this.normal.y * 9.0);
+    c.moveTo(this.position.x - this.right.x * 3.5 - this.normal.x * 3.0, this.position.y - this.right.y * 3.5 - this.normal.y * 3.0);
+    c.lineTo(this.position.x - this.right.x * 3.5 - this.normal.x * 9.0, this.position.y - this.right.y * 3.5 - this.normal.y * 9.0);
     c.stroke();
     
     // Car body
