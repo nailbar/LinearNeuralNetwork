@@ -2,17 +2,17 @@ function LinearNeuralNetworkNeuron(order, connections) {
     this.order = order; // Remember own order so we don't fetch from neurons without a value by mistake
     this.inputs = [];
     this.output = 0.0;
-    this.value = Math.random() * 4.0 - 2.0;
+    this.value = Math.random() * 2.0 - 1.0;
     if(this.value < 0) this.value = 0;
     if(this.value > 1) this.value = 1;
     
     // Set inputs
-    for(var i = 0; i < connections; i++) {
+    if(order > 0) for(var i = 0; i < connections; i++) {
         this.inputs[i] = {
             'source': Math.floor(Math.random() * order), // ID for source neuron
             'minimum': Math.random() * 2.0 - 1.0,
             'maximum': 0,
-            'weight': Math.random() * 4.0 - 2.0,
+            'weight': Math.random() * 2.0 - 1.0,
             'offset': Math.random() * 2.0 - 1.0
         }
         if(this.inputs[i].minimum < 0) this.inputs[i].minimum = 0;
@@ -101,9 +101,9 @@ LinearNeuralNetworkNeuron.prototype.mutate = function(amount) {
         if(this.inputs[i].minimum > this.inputs[i].maximum) this.inputs[i].maximum = this.inputs[i].minimum + Math.random() * (1.0 - this.inputs[i].minimum);
         break;
     case 3:
-        this.inputs[i].weight += (Math.random() * 4.0 - 2.0) * amount;
-        if(this.inputs[i].weight < -2) this.inputs[i].weight = -2;
-        if(this.inputs[i].weight > 2) this.inputs[i].weight = 2;
+        this.inputs[i].weight += (Math.random() * 2.0 - 1.0) * amount;
+        if(this.inputs[i].weight < -1) this.inputs[i].weight = -1;
+        if(this.inputs[i].weight > 1) this.inputs[i].weight = 1;
         break;
     case 4:
         this.inputs[i].offset += (Math.random() * 2.0 - 1.0) * amount;
@@ -148,7 +148,7 @@ LinearNeuralNetwork.prototype.think = function(inputs) {
 LinearNeuralNetwork.prototype.mutate = function(times, amount) {
     var x = 0;
     for(var i = 0; i < times; i++) {
-        this.n[Math.floor(Math.random() * this.n.length)].mutate(amount);
+        this.n[Math.floor(Math.random() * (this.n.length - 1)) + 1].mutate(amount);
     }
 }
 

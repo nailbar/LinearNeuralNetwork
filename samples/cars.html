@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
+<title>Linear Neural Network test page</title>
+<script type='text/javascript' src='../LinearNeuralNetwork.class.js'></script>
+<script type='text/javascript'>
+var n = new LinearNeuralNetwork(9, 3, 3);
+var c = false;
+var img_width = 1350;
+var img_height = 630;
+var cars = [];
+
+// A car
+function car() {
+    this.position = { 'x': Math.random() * img_width, 'y': Math.random() * img_height };
+    this.normal = { 'x': Math.cos(this.position.x), 'y': Math.sin(this.position.x) };
+    this.right = { 'x': this.normal.y, 'y': -this.normal.x };
+    this.wheels = Math.random() * 2.0 - 1.0;
+    this.wheelnormal = {
+        'x': this.normal.x * Math.cos(this.wheels * 0.8) - this.normal.y * Math.sin(this.wheels * 0.8),
+        'y': this.normal.x * Math.sin(this.wheels * 0.8) + this.normal.y * Math.cos(this.wheels * 0.8)
+    };
+    this.color = "rgb(" + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + ")";
+    this.speed = Math.random() * 2.0;
+    this.mind = new LinearNeuralNetwork(9, 3, 3);
+}
+car.prototype.think = function() {
+    this.mind.mutate(1, 0.1);
+    var input = [ this.position.x / img_width, this.position.y / img_height ];
+    var output = this.mind.think(input);
+    this.wheels = output[0] - output[1];
+    this.speed = output[2] * 2.0;
+}
+car.prototype.move = function() {
+    var tmp = {};
+    tmp.nose = { 'x': this.position.x + this.normal.x * 6.0 + this.wheelnormal.x * this.speed, 'y': this.position.y + this.normal.y * 6.0 + this.wheelnormal.y * this.speed };
+    tmp.rear = { 'x': this.position.x - this.normal.x * 6.0, 'y': this.position.y - this.normal.y * 6.0 };
+    tmp.relative = { 'x': tmp.nose.x - tmp.rear.x, 'y': tmp.nose.y - tmp.rear.y };
+    tmp.length = Math.sqrt(tmp.relative.x * tmp.relative.x + tmp.relative.y * tmp.relative.y);
+    this.normal = { 'x': tmp.relative.x / tmp.length, 'y': tmp.relative.y / tmp.length };
+    this.right = { 'x': this.normal.y, 'y': -this.normal.x };
+    this.wheelnormal = {
+        'x': this.normal.x * Math.cos(this.wheels * 0.8) - this.normal.y * Math.sin(this.wheels * 0.8),
+        'y': this.normal.x * Math.sin(this.wheels * 0.8) + this.normal.y * Math.cos(this.wheels * 0.8)
+    };
+    this.position = { 'x': tmp.nose.x - this.normal.x * 6.0, 'y': tmp.nose.y - this.normal.y * 6.0 };
+}
+car.prototype.draw = function() {
+    
+    // Front wheels
+    c.strokeStyle = "rgb(0,0,0)";
+    c.lineWidth = 2;
+    c.beginPath();
+    c.moveTo(this.position.x + this.right.x * 4.0 + this.normal.x * 6.0 + this.wheelnormal.x * 3.0, this.position.y + this.right.y * 4.0 + this.normal.y * 6.0 + this.wheelnormal.y * 3.0);
+    c.lineTo(this.position.x + this.right.x * 4.0 + this.normal.x * 6.0 - this.wheelnormal.x * 3.0, this.position.y + this.right.y * 4.0 + this.normal.y * 6.0 - this.wheelnormal.y * 3.0);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(this.position.x - this.right.x * 4.0 + this.normal.x * 6.0 + this.wheelnormal.x * 3.0, this.position.y - this.right.y * 4.0 + this.normal.y * 6.0 + this.wheelnormal.y * 3.0);
+    c.lineTo(this.position.x - this.right.x * 4.0 + this.normal.x * 6.0 - this.wheelnormal.x * 3.0, this.position.y - this.right.y * 4.0 + this.normal.y * 6.0 - this.wheelnormal.y * 3.0);
+    c.stroke();
+    
+    // Rear wheels
+    c.beginPath();
+    c.moveTo(this.position.x + this.right.x * 4.0 - this.normal.x * 3.0, this.position.y + this.right.y * 4.0 - this.normal.y * 3.0);
+    c.lineTo(this.position.x + this.right.x * 4.0 - this.normal.x * 9.0, this.position.y + this.right.y * 4.0 - this.normal.y * 9.0);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(this.position.x - this.right.x * 4.0 - this.normal.x * 3.0, this.position.y - this.right.y * 4.0 - this.normal.y * 3.0);
+    c.lineTo(this.position.x - this.right.x * 4.0 - this.normal.x * 9.0, this.position.y - this.right.y * 4.0 - this.normal.y * 9.0);
+    c.stroke();
+    
+    // Car body
+    c.beginPath();
+    c.moveTo(this.position.x - this.normal.x * 9.0, this.position.y - this.normal.y * 9.0);
+    c.lineTo(this.position.x + this.normal.x * 9.0, this.position.y + this.normal.y * 9.0);
+    c.strokeStyle = "rgb(0,0,0)";
+    c.lineWidth = 7;
+    c.stroke();
+    c.strokeStyle = this.color;
+    c.lineWidth = 6;
+    c.stroke();
+    
+    // Windshield
+    c.beginPath();
+    c.moveTo(this.position.x - this.normal.x * 7.0, this.position.y - this.normal.y * 7.0);
+    c.lineTo(this.position.x + this.normal.x * 4.0, this.position.y + this.normal.y * 4.0);
+    c.strokeStyle = "rgb(255,255,255)";
+    c.lineWidth = 5;
+    c.stroke();
+    
+    // Roof
+    c.beginPath();
+    c.moveTo(this.position.x - this.normal.x * 5.0, this.position.y - this.normal.y * 5.0);
+    c.lineTo(this.position.x + this.normal.x * 1.0, this.position.y + this.normal.y * 1.0);
+    c.strokeStyle = "rgb(0,0,0)";
+    c.lineWidth = 5;
+    c.stroke();
+}
+
+// Init
+function init() {
+    c = document.getElementById('canvas').getContext('2d');
+    for(var i = 0; i < 10; i++) cars.push(new car());
+    loop();
+}
+function loop() {
+    c.clearRect(0, 0, img_width, img_height);
+    for(var i = 0; i < cars.length; i++) {
+        cars[i].think();
+        cars[i].move();
+        cars[i].draw();
+        if(cars[i].position.x < 0 || cars[i].position.x > img_width || cars[i].position.y < 0 || cars[i].position.y > img_height) cars[i] = new car();
+    }
+    setTimeout(loop, 10);
+}
+function manualmutate() {
+}
+</script>
+</head>
+<body onload='init()'>
+<canvas width='1350' height='630' id='canvas' onclick='manualmutate()'></canvas>
+<pre id='code'></pre>
+</body>
+</html>

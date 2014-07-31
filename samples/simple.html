@@ -5,7 +5,7 @@
 <title>Linear Neural Network test page</title>
 <script type='text/javascript' src='../LinearNeuralNetwork.class.js'></script>
 <script type='text/javascript'>
-var n = new LinearNeuralNetwork(10, 4, 3);
+var n = new LinearNeuralNetwork(9, 3, 3);
 var c = false;
 var y = 0;
 var img_width = 1350;
@@ -18,6 +18,7 @@ function init() {
 }
 function loop() {
     var tmp;
+    if(y == 0) document.getElementById('code').innerHTML = n.export().split("N:").join("\n    N:").split("I:").join("\n        I:");
     for(var x = 0; x < img_width; x++) {
         tmp = n.think([
             n.normalize(x - (img_width * 0.5), (img_width * 0.5), (img_width * 0.5)),
@@ -27,16 +28,21 @@ function loop() {
         c.fillRect(x, y, 1, 1);
     }
     y++;
-    if(y < img_height) setTimeout(loop, 10);
-    else {
-        y = 0;
-        //n.mutate(10);
-        //setTimeout(loop, 10);
-    }
+    if(y < img_height) {
+        c.fillStyle = "rgb(0,0,0)";
+        c.fillRect(0, y, img_width, 1);
+        setTimeout(loop, 10);
+    } else y = 0;
+}
+function manualmutate() {
+    n.mutate(5, 0.5);
+    if(y == 0) setTimeout(loop, 10);
+    y = 0;
 }
 </script>
 </head>
 <body onload='init()'>
-<canvas width='1350' height='630' id='canvas'></canvas>
+<canvas width='1350' height='630' id='canvas' onclick='manualmutate()'></canvas>
+<pre id='code'></pre>
 </body>
 </html>
