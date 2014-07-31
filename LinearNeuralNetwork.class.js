@@ -1,4 +1,4 @@
-function LinearNeuralNetworkNeuron(order, connections) {
+function LinearNeuralNetworkNeuron(order, connections, passive) {
     this.order = order; // Remember own order so we don't fetch from neurons without a value by mistake
     this.inputs = [];
     this.output = 0.0;
@@ -7,7 +7,7 @@ function LinearNeuralNetworkNeuron(order, connections) {
     if(this.value > 1) this.value = 1;
     
     // Set inputs
-    if(order > 0) for(var i = 0; i < connections; i++) {
+    if(!passive) for(var i = 0; i < connections; i++) {
         this.inputs[i] = {
             'source': Math.floor(Math.random() * order), // ID for source neuron
             'minimum': Math.random() * 2.0 - 1.0,
@@ -84,7 +84,7 @@ LinearNeuralNetworkNeuron.prototype.import = function(str) {
 LinearNeuralNetworkNeuron.prototype.mutate = function(amount) {
     if(!amount) amount = 1.0;
     var i = Math.floor(Math.random() * this.inputs.length) + 1;
-    if(i == this.inputs.length) {
+    if(i == this.inputs.length || this.inputs.length == 0) {
         this.value += (Math.random() * 2.0 - 1.0) * amount;
         if(this.value < 0) this.value = 0;
         if(this.value > 1) this.value = 1;
@@ -113,13 +113,14 @@ LinearNeuralNetworkNeuron.prototype.mutate = function(amount) {
     }
 }
 
-function LinearNeuralNetwork(neurons, connections, outputs) {
+function LinearNeuralNetwork(neurons, connections, outputs, inputs) {
     this.outputs = outputs; // Number of values returned as output values
+    this.inputs = inputs; // Number of passive neurons (usually reserved for setting input values)
     this.n = []; // Neurons
     
     // Populate neurons
     for(var i = 0; i < neurons; i++) {
-        this.n[i] = new LinearNeuralNetworkNeuron(i, connections);
+        this.n[i] = new LinearNeuralNetworkNeuron(i, connections, i < inputs);
     }
 }
 
@@ -155,8 +156,9 @@ LinearNeuralNetwork.prototype.mutate = function(times, amount) {
 // Export neural network as string
 LinearNeuralNetwork.prototype.export = function() {
     var data = [
-        "LNN0.2",
-        this.outputs
+        "LNN0.3",
+        this.outputs,
+        this.inputs
     ];
     for(var i = 0; i < this.n.length; i++) {
         data.push(this.n[i].export());
@@ -166,10 +168,11 @@ LinearNeuralNetwork.prototype.export = function() {
 
 // Import neural network from string
 LinearNeuralNetwork.prototype.import = function(str) {
-    if(str.substr(0, 7) !== "LNN0.2:") return false;
+    if(str.substr(0, 7) !== "LNN0.3:") return false;
     var data = str.split("N:");
     data[0] = data[0].split(":");
     this.outputs = parseInt(data[0][1], 10);
+    this.inputs = parseInt(data[0][1], 10);
     this.n = [];
     for(var i = 1; i < data.length; i++) {
         this.n[i - 1] = new LinearNeuralNetworkNeuron(i - 1, 0);
