@@ -12,7 +12,9 @@ function LinearNeuralNetworkNeuron(order, connections, passive) {
             'source': Math.floor(Math.random() * order), // ID for source neuron
             'minimum': Math.random() * 2.0 - 1.0,
             'maximum': 0,
-            'weight': Math.random() * 2.0 - 1.0,
+            'weight1': Math.random() * 2.0 - 1.0,
+            'weight2': Math.random() * 2.0 - 1.0,
+            'weight3': Math.random() * 2.0 - 1.0,
             'offset': Math.random() * 2.0 - 1.0
         }
         if(this.inputs[i].minimum < 0) this.inputs[i].minimum = 0;
@@ -37,7 +39,8 @@ LinearNeuralNetworkNeuron.prototype.think = function(neurons) {
         if(inputvalue >= this.inputs[i].minimum && inputvalue <= this.inputs[i].maximum) {
             inputvalue -= this.inputs[i].minimum;
             inputvalue *= 1 / (this.inputs[i].maximum - this.inputs[i].minimum);
-            this.output += this.inputs[i].offset + inputvalue * this.inputs[i].weight;
+            inputvalue += this.inputs[i].weight3;
+            this.output += this.inputs[i].offset + inputvalue * this.inputs[i].weight2 * this.inputs[i].weight2 + inputvalue * this.inputs[i].weight1;
         }
     }
     this.output = this.crop(this.output);
@@ -55,7 +58,9 @@ LinearNeuralNetworkNeuron.prototype.export = function() {
         data.push(this.inputs[i].source);
         data.push(this.inputs[i].minimum);
         data.push(this.inputs[i].maximum);
-        data.push(this.inputs[i].weight);
+        data.push(this.inputs[i].weight1);
+        data.push(this.inputs[i].weight2);
+        data.push(this.inputs[i].weight3);
         data.push(this.inputs[i].offset);
     }
     return data.join(":");
@@ -73,8 +78,10 @@ LinearNeuralNetworkNeuron.prototype.import = function(str) {
             'source': parseInt(data[i][0], 10), // ID for source neuron
             'minimum': parseFloat(data[i][1]),
             'maximum': parseFloat(data[i][2]),
-            'weight': parseFloat(data[i][3]),
-            'offset': parseFloat(data[i][4])
+            'weight1': parseFloat(data[i][3]),
+            'weight2': parseFloat(data[i][4]),
+            'weight3': parseFloat(data[i][5]),
+            'offset': parseFloat(data[i][6])
         });
     }
     return true;
@@ -88,7 +95,7 @@ LinearNeuralNetworkNeuron.prototype.mutate = function(amount) {
         this.value += (Math.random() * 2.0 - 1.0) * amount;
         if(this.value < 0) this.value = 0;
         if(this.value > 1) this.value = 1;
-    } else switch(Math.floor(Math.random() * 5.0)) {
+    } else switch(Math.floor(Math.random() * 7.0)) {
     case 0: this.inputs[i].source = Math.floor(Math.random() * this.order); break;
     case 1:
         this.inputs[i].minimum += (Math.random() * 2.0 - 1.0) * amount;
@@ -101,14 +108,24 @@ LinearNeuralNetworkNeuron.prototype.mutate = function(amount) {
         if(this.inputs[i].minimum > this.inputs[i].maximum) this.inputs[i].maximum = this.inputs[i].minimum + Math.random() * (1.0 - this.inputs[i].minimum);
         break;
     case 3:
-        this.inputs[i].weight += (Math.random() * 2.0 - 1.0) * amount;
-        if(this.inputs[i].weight < -1) this.inputs[i].weight = -1;
-        if(this.inputs[i].weight > 1) this.inputs[i].weight = 1;
+        this.inputs[i].weight1 += (Math.random() * 2.0 - 1.0) * amount;
+        if(this.inputs[i].weight1 < -1) this.inputs[i].weight1 = -1;
+        if(this.inputs[i].weight > 1) this.inputs[i].weight1 = 1;
         break;
     case 4:
+        this.inputs[i].weight2 += (Math.random() * 2.0 - 1.0) * amount;
+        if(this.inputs[i].weight2 < -1) this.inputs[i].weight2 = -1;
+        if(this.inputs[i].weight2 > 1) this.inputs[i].weight2 = 1;
+        break;
+    case 5:
+        this.inputs[i].weight3 += (Math.random() * 2.0 - 1.0) * amount;
+        if(this.inputs[i].weight3 < -1) this.inputs[i].weight3 = -1;
+        if(this.inputs[i].weight3 > 1) this.inputs[i].weight3 = 1;
+        break;
+    case 6:
         this.inputs[i].offset += (Math.random() * 2.0 - 1.0) * amount;
-        if(this.inputs[i].weight < -1) this.inputs[i].weight = -1;
-        if(this.inputs[i].weight > 1) this.inputs[i].weight = 1;
+        if(this.inputs[i].offset < -1) this.inputs[i].offset = -1;
+        if(this.inputs[i].offset > 1) this.inputs[i].offset = 1;
         break;
     }
 }

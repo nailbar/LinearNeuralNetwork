@@ -26,7 +26,7 @@ function car() {
     };
     this.color = "rgb(" + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + ")";
     this.speed = Math.random() * 2.0;
-    this.mind = new LinearNeuralNetwork(10, 4, 4, 3);
+    this.mind = new LinearNeuralNetwork(10, 2, 4, 3);
     this.age = 0;
 }
 car.prototype.think = function() {
